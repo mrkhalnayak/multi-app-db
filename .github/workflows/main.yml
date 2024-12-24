@@ -23,4 +23,9 @@ jobs:
         docker ps 
         docker network ls
         docker volume ls 
+    
+    - name: access the application
+      run: |
+        curl https://localhost:3000
+        curl https://localhost:8000
         
