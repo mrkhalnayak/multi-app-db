@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoUser
+      MONGO_INITDB_ROOT_PASSWORD: mongoPassword
+      MONGO_INITDB_DATABASE: mydatabase
+    ports:
+      - "27017:27017"
+    volumes:
+      - multi-app-vol:/data/db 
+    networks:
+      - app-network
+
+
+  flask-app:
+    build:
+      context: ./python-app 
+    container_name: flask-app
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongoUser:mongoPassword@mongo:27017/my-database?authSource=admin
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    volumes:
+      - multi-app-vol:/app/data  
+
+ 
+  node-app:
+    build:
+      context: ./node-app  
+    container_name: node-app
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongoUser:mongoPassword@mongo:27017/my-database?authSource=admin
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    volumes:
+      - multi-app-vol:/app/data  
+
+volumes:
+  multi-app-vol:  
+
+networks:
+  app-network:
