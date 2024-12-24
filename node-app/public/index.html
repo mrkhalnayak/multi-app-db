@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js To-Do List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .task-form {
+      margin-bottom: 20px;
+    }
+    .task-list {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>To-Do List</h1>
+  
+  <div class="task-form">
+    <input type="text" id="taskInput" placeholder="Enter new task" />
+    <button onclick="addTask()">Add Task</button>
+  </div>
+
+  <div class="task-list">
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    // Function to add a new task
+    function addTask() {
+      const taskInput = document.getElementById('taskInput');
+      const task = taskInput.value.trim();
+
+      if (task === '') {
+        alert('Please enter a task!');
+        return;
+      }
+
+      fetch('/addTask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ task }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          taskInput.value = ''; // Clear the input field
+          loadTasks(); // Reload tasks
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred');
+      });
+    }
+
+    // Function to load tasks from the server
+    function loadTasks() {
+      fetch('/tasks')
+        .then(response => response.json())
+        .then(tasks => {
+          const taskList = document.getElementById('taskList');
+          taskList.innerHTML = ''; // Clear current task list
+
+          tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.textContent = task.task;
+            taskList.appendChild(li);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading tasks:', error);
+        });
+    }
+
+    // Load tasks on page load
+    window.onload = loadTasks;
+  </script>
+</body>
+</html>
