@@ -26,6 +26,6 @@ jobs:
     
     - name: access the application
       run: |
-        curl https://localhost:3000
-        curl https://localhost:8000
+        curl http://localhost:3000
+        curl http://localhost:8000
         
