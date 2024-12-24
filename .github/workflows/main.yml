@@ -16,7 +16,10 @@ jobs:
       uses: cloudposse/github-action-docker-compose-test-run@main
       with:
         file: docker-compose.yml
-      run: |
+      run: docker-compose up -d 
+
+    - name: docker container info
+      run: | 
         docker ps 
         docker network ls
         docker volume ls 
